@@ -1,0 +1,111 @@
+Java 8, Spring MVC, Sping Boot, Spring Security, Spring Security OAuth, Spring Data JPA, SQL Server
+
+Technology Stack :
+  - Java 8
+  - Spring Boot
+  - Spring MVC
+  - Spring Security
+  - Spring Security OAuth
+  - Spring Data JPA
+  - Spring MVC Test
+  - SQL Server
+
+Future Scope :
+  - More Unit Test Coverage
+  - CRUD Operations for User
+  - Secure REST endpoints using SSL/HTTPS in the same code base
+
+Important Endpoints/ Information:
+  - First Test Greeting endpoint
+
+  curl http://localhost:8080/greeting
+
+ Will receive following JSON response : {"error":"unauthorized","error_description":"Full authentication is required to access this resource"} ,  which indicates you are not authorized to access the resource.
+
+  - To Access this resource We will require access_token , to generate access token via the OAuth handshake use following URL:
+
+  curl -X POST -vu clientapp:123456 http://localhost:8080/oauth/token -H "Accept: application/json" -d "password=test1&username=pawarc1709@gmail.com&grant_type=password&scope=read%20write&client_secret=123456&client_id=clientapp"
+
+  Will receive following JSON response :
+
+  Note: Unnecessary use of -X or --request, POST is already inferred.
+* timeout on name lookup is not supported
+*   Trying ::1...
+* TCP_NODELAY set
+* Connected to localhost (::1) port 8080 (#0)
+* Server auth using Basic with user 'clientapp'
+> POST /oauth/token HTTP/1.1
+> Host: localhost:8080
+> Authorization: Basic Y2xpZW50YXBwOjEyMzQ1Ng==
+> User-Agent: curl/7.53.1
+> Accept: application/json
+> Content-Length: 124
+> Content-Type: application/x-www-form-urlencoded
+>
+* upload completely sent off: 124 out of 124 bytes
+< HTTP/1.1 200 OK
+< Server: Apache-Coyote/1.1
+< X-Content-Type-Options: nosniff
+< X-XSS-Protection: 1; mode=block
+< Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+< Pragma: no-cache
+< Expires: 0
+< X-Frame-Options: DENY
+< Cache-Control: no-store
+< Pragma: no-cache
+< Content-Type: application/json;charset=UTF-8
+< Transfer-Encoding: chunked
+< Date: Tue, 27 Jun 2017 09:18:03 GMT
+<
+{"access_token":"b3e405bf-7225-4b74-84ec-4cc38ff25ed7","token_type":"bearer","refresh_token":"e746d4f7-a545-49d1-8a06-56d9e11983d6","expires_in":43199
+,"scope":"read write"}* Connection #0 to host localhost left intact
+
+  - Get generated access token to access any of the URL's:
+
+    curl http://localhost:8080/greeting -H "Authorization: Bearer b3e405bf-7225-4b74-84ec-4cc38ff25ed7"
+
+  We will get following JSON response now :
+
+  {"id":1,"content":"Hello, Chetan!"}
+
+    curl http://localhost:8080/users -H "Authorization: Bearer b3e405bf-7225-4b74-84ec-4cc38ff25ed7"
+
+  JSON Response : [{"id":1,"name":"Chetan","login":"pawarc1709@gmail.com","password":"test1"},{"id":2,"name":"Chetan Pawar","login":"pawarchetan1709@gmail.com","password":"test2"}]
+
+  - After the specified time period, the access_token will expire. Use the refresh_token that was returned in the original OAuth authorization to retrieve a new access_token:
+
+  curl -X POST -vu clientapp:123456 http://localhost:8080/oauth/token -H "Accept: application/json" -d "grant_type=refresh_token&refresh_token=e746d4f7-a545-49d1-8a06-56d9e11983d6&client_secret=123456&client_id=clientapp"
+
+  JSON Response :
+
+  Note: Unnecessary use of -X or --request, POST is already inferred.
+* timeout on name lookup is not supported
+*   Trying ::1...
+* TCP_NODELAY set
+* Connected to localhost (::1) port 8080 (#0)
+* Server auth using Basic with user 'clientapp'
+> POST /oauth/token HTTP/1.1
+> Host: localhost:8080
+> Authorization: Basic Y2xpZW50YXBwOjEyMzQ1Ng==
+> User-Agent: curl/7.53.1
+> Accept: application/json
+> Content-Length: 116
+> Content-Type: application/x-www-form-urlencoded
+>
+* upload completely sent off: 116 out of 116 bytes
+< HTTP/1.1 200 OK
+< Server: Apache-Coyote/1.1
+< X-Content-Type-Options: nosniff
+< X-XSS-Protection: 1; mode=block
+< Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+< Pragma: no-cache
+< Expires: 0
+< X-Frame-Options: DENY
+< Cache-Control: no-store
+< Pragma: no-cache
+< Content-Type: application/json;charset=UTF-8
+< Transfer-Encoding: chunked
+< Date: Tue, 27 Jun 2017 09:23:28 GMT
+<
+{"access_token":"3ae2ebfa-35c3-438d-820a-b26a1b7e2c1c","token_type":"bearer","refresh_token":"e746d4f7-a545-49d1-8a06-56d9e11983d6","expires_in":43199
+,"scope":"read write"}* Connection #0 to host localhost left intact
